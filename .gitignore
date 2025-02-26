@@ -1,0 +1,6 @@
+.snakemake/
+ChAMP/
+CHAMP_Normalization/
+ChAMPdata/
+data/
+logs/

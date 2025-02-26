@@ -1,0 +1,17 @@
+name: GEO2Epi
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-base=4.2.3
+  - r-data.table
+  - python=3.10.9
+  - snakemake
+  - pandas
+  - bioconductor-champ=2.28.0
+  - bioconductor-champdata=2.30.0
+  - pip
+  - pip:
+    - biolearn    # 你的 biolearn 模型庫，或其他用 pip 安裝的 package
+    # 若有其他 Python 套件，也可以在這裡

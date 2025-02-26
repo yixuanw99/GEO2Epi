@@ -1,0 +1,13 @@
+PROJECT_ROOT: "/home2/yxwu/GEO2Epi"   # 請依實際情況修改
+GSE_ID_LIST:
+  # - "GSE219217"
+  - "GSE118468"
+  - "GSE176529"
+  - "GSE285416"
+  - "GSE230652"
+  - "GSE153712"
+  - "GSE208623"
+  - "GSE144858"
+  - "GSE53740"
+  - "GSE62003"
+CORES: 20
