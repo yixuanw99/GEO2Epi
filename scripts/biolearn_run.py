@@ -45,7 +45,7 @@ def run_biolearn(beta_matrix_path, sample_sheet_path, output_path):
     # Save results
     if results:
         combined_df = pd.concat(results, axis=1)
-        combined_df = pd.merge(combined_df, sample_sheet, left_index=True, right_on='Sample_Name')
+        combined_df = pd.merge(sample_sheet, combined_df, left_on='Sample_Name', right_index=True)
         combined_df.to_csv(output_path, index=True)
     
     print(f"✅ BioLearn Analysis Complete. Results saved at: {output_path}")
