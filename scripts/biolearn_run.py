@@ -14,7 +14,7 @@ def run_biolearn(beta_matrix_path, sample_sheet_path, output_path):
     data.metadata.index.name = None
     data.metadata.rename(columns={'Gender': 'sex', 'Age': 'age'}, inplace=True)
     if 'sex' in data.metadata.columns:
-        data.metadata['sex'] = data.metadata['sex'].map({'Female': 2, 'Male': 1})
+        data.metadata['sex'] = data.metadata['sex'].map({'Female': 1, 'Male': 2})
     
     models = [
         "Horvathv1", "Hannum", "Lin", "PhenoAge", "YingCausAge", "YingDamAge", "YingAdaptAge", "Horvathv2", "PEDBE", 
@@ -36,12 +36,36 @@ def run_biolearn(beta_matrix_path, sample_sheet_path, output_path):
     for i, model in enumerate(models, start=1):
         print(f"Processing model {i}/{len(models)}: {model}")
         try:
-            df = gallery.get(model).predict(data)
-            df = df.add_prefix(f"{model}_")
-            results.append(df)
+            # If it's a GrimAge model, filter out samples without NA values
+            if model in ["GrimAgeV1", "GrimAgeV2"]:
+                # Check if metadata contains required fields
+                if 'age' not in data.metadata.columns or 'sex' not in data.metadata.columns:
+                    continue
+                    
+                # Find samples where age and sex don't have NA values
+                valid_samples = data.metadata[~(data.metadata['age'].isna() | data.metadata['sex'].isna())].index
+                
+                if len(valid_samples) == 0:
+                    continue
+                                    
+                # Create a temporary GeoData object with only valid samples
+                temp_data = GeoData(
+                    metadata=data.metadata.loc[valid_samples],
+                    dnam=data.dnam[valid_samples]
+                )
+                
+                # Predict and add results
+                df = gallery.get(model).predict(temp_data)
+                df = df.add_prefix(f"{model}_")
+                results.append(df)
+            else:
+                # For other models, use all available samples
+                df = gallery.get(model).predict(data)
+                df = df.add_prefix(f"{model}_")
+                results.append(df)
         except Exception as e:
-            print(f"⚠️ Model {model} failed: {e}")
-    
+            print(f"Error processing model {model}: {e}")
+            continue
     # Save results
     if results:
         combined_df = pd.concat(results, axis=1)
